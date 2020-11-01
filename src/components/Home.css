@@ -2,6 +2,15 @@
     float: right;
 }
 
+.quiz-images {
+    width: 50%;
+    background-color: white;
+    margin: auto;
+    padding: 10px;
+    border: 10 solid black;
+    text-align: center;
+}
+
 .howdy {
     display: block;
     text-align: center;
@@ -15,4 +24,5 @@
 
 body {
     background-color: lightslategray;
+    align-content: center;
 }
