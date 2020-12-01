@@ -12,8 +12,8 @@ class Home extends React.Component {
         };
     }
 
-    body = () => {
-        let { data, username } = this.state;
+    body = (username) => {
+        let { data } = this.state;
         return (
             <div className="quiz-images">
                 {data.length > 0 ?
@@ -34,8 +34,7 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        let data = server.getQuizzes();
-        this.setState({data: data});
+        server.getQuizzes().then(data => this.setState({data: data})).catch(e => console.log(e));
     }
 
     render() {
@@ -55,7 +54,7 @@ class Home extends React.Component {
                         <Link to="/login">Login</Link>}
                 </div>
                 <div className="howdy">Howdy From the Homepage!</div>
-                {this.body()}
+                {this.body(username)}
             </div>
         )
     }

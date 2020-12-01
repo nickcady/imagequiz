@@ -8,18 +8,19 @@ class Quiz extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: {},
+            username: '',
+            data: [],
             cursor: 0,
             score: 0,
         }
     }
 
-    scoreCard = () => {
+    scoreCard = (username) => {
         const { score } = this.state;
         return (
             <div>
                 <div className='score'>You Scored a {score}/6!</div>
-                <div><Link to={{pathname: "/imagequiz/", state: {username: this.props.location.username}}}>
+                <div><Link to={{pathname: "/imagequiz/", state: {user: username}}}>
                     Back to Home
                 </Link></div>
             </div>
@@ -27,7 +28,7 @@ class Quiz extends React.Component {
     }
 
     goToNext = () => {
-        if (this.state.cursor < this.state.data.questions.length) {
+        if (this.state.cursor < this.state.data.length) {
             this.setState({ cursor: this.state.cursor + 1});
         }
     }
@@ -39,8 +40,7 @@ class Quiz extends React.Component {
     }
 
     componentDidMount() {
-        let data = server.getQuiz(this.props.location.state.id);
-        this.setState({ data: data });
+        server.getQuiz(this.props.location.state.id).then(data => this.setState({data: data}));
     }
 
     onChoiceSelected = (correct) => {
@@ -53,17 +53,31 @@ class Quiz extends React.Component {
     }
 
     render() {
-        const { data, cursor, userAnswers } = this.state;
+        let username = '';
+        let quizid = 0;
+        let location = this.props.location;
+        if (location) {
+            if (location.state) {
+                if (location.state.username) {
+                    username = location.state.username;
+                    quizid = location.state.id;
+                }
+            }
+        }
+        const { data, cursor } = this.state;
         if (cursor === 6) {
+            if (username.length > 0) {
+                server.saveScore(username, quizid, this.state.score);
+            }
             return (
                 <div className='scoreCard'>
-                    {this.scoreCard()}
+                    {this.scoreCard(username)}
                 </div>
             );
         }
         return (
             <div className='quizContent'>
-                {data.questions ? <Question question = {data.questions[cursor]} 
+                {data.length !== 0 ? <Question question = {data[cursor]} 
                 onChoiceSelected={this.onChoiceSelected} 
                 cursor={cursor} /> : ''}
                 <button onClick={this.goToPrev}>Prev</button>
